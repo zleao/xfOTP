@@ -19,9 +19,9 @@ namespace xfOTP.Views
             BindingContext = viewModel = new TokensViewModel();
         }
 
-        async void AddToken_Clicked(object sender, EventArgs e)
+        private void AddToken_Clicked(object sender, EventArgs e)
         {
-            await DisplayAlert("Add Token", "Comming soon...", "Ok");
+            viewModel.AddTokenCommand.Execute(null);
         }
 
         async void EditTokens_Clicked(object sender, EventArgs e)
