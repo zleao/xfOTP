@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Foundation;
+﻿using Foundation;
+using Plugin.Toasts;
 using UIKit;
+using UserNotifications;
+using Xamarin.Forms;
 
 namespace xfOTP.iOS
 {
@@ -27,6 +26,14 @@ namespace xfOTP.iOS
             LoadApplication(new App());
 
             ZXing.Net.Mobile.Forms.iOS.Platform.Init();
+            DependencyService.Register<ToastNotification>(); // Register your dependency
+            ToastNotification.Init();
+
+            // Request Permissions
+            UNUserNotificationCenter.Current.RequestAuthorization(UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound, (granted, error) =>
+            {
+                // Do something if needed
+            });
 
             return base.FinishedLaunching(app, options);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using xfOTP.Models;
 
 namespace xfOTP.Services
 {
@@ -10,6 +11,6 @@ namespace xfOTP.Services
         /// </summary>
         /// <param name="otpAuthString">uri based otpauth info (e.g. otpauth://totp/Example:alice@google.com?secret=mv4gc3lqnrssa43fmnzgk5a&issuer=Example)</param>
         /// <returns>Guid of the newlly created token</returns>
-        Task<Guid> CreateNewTokenAsync(string otpAuthString);
+        Task<Token> CreateNewTokenAsync(string otpAuthString);
     }
 }

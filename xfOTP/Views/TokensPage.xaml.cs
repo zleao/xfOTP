@@ -7,7 +7,7 @@ namespace xfOTP.Views
 {
     // Learn more about making custom code visible in the Xamarin.Forms previewer
     // by visiting https://aka.ms/xamarinforms-previewer
-    [DesignTimeVisible(false)]
+    [DesignTimeVisible(true)]
     public partial class TokensPage : ContentPage
     {
         TokensViewModel viewModel;
@@ -26,7 +26,7 @@ namespace xfOTP.Views
 
         async void EditTokens_Clicked(object sender, EventArgs e)
         {
-            await DisplayAlert("Edit Tokens", "Comming soon...", "Ok");
+            viewModel.EditCommand.Execute(null);
         }
 
         protected override void OnAppearing()
@@ -35,6 +35,11 @@ namespace xfOTP.Views
 
             if (viewModel.Tokens.Count == 0)
                 viewModel.RefreshTokensCommand.Execute(null);
+        }
+
+        private void TokensListView_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            viewModel.TokenSelectedCommand.Execute(e.ItemIndex);
         }
     }
 }

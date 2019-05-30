@@ -15,13 +15,16 @@
 
     <StackLayout>
         <ListView x:Name="TokensListView"
-                ItemsSource="{Binding Tokens}"
-                VerticalOptions="FillAndExpand"
-                HasUnevenRows="true"
-                RefreshCommand="{Binding RefreshTokensCommand}"
-                IsPullToRefreshEnabled="true"
-                IsRefreshing="{Binding IsBusy, Mode=OneWay}"
-                CachingStrategy="RecycleElement">
+                  ItemsSource="{Binding Tokens}"
+                  VerticalOptions="FillAndExpand"
+                  HasUnevenRows="true"
+                  RefreshCommand="{Binding RefreshTokensCommand}"
+                  IsPullToRefreshEnabled="true"
+                  IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                  CachingStrategy="RecycleElement"
+                  Footer=""
+                  SelectionMode="None"
+                  ItemTapped="TokensListView_ItemTapped">
             <d:ListView.ItemsSource>
                 <x:Array Type="{x:Type x:String}">
                     <x:String>First Item</x:String>
@@ -35,17 +38,18 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Padding="10">
-                            <Label Text="{Binding Id}" 
-                                   d:Text="{Binding .}"
-                                   LineBreakMode="NoWrap" 
-                                   Style="{DynamicResource ListItemTextStyle}" 
-                                   FontSize="16" />
-                            <!--<Label Text="{Binding Description}" 
-                                d:Text="Item description"
-                                LineBreakMode="NoWrap"
-                                Style="{DynamicResource ListItemDetailTextStyle}"
-                                FontSize="13" />-->
+                        <StackLayout Orientation="Horizontal" Padding="20">
+                            <Image Source="icon_supplier" HeightRequest="50" 
+                                   WidthRequest="50" HorizontalOptions="Center"
+                                   Margin="0,0,10,0"></Image>
+                            <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
+                                <Label Text="{Binding Token.Account}" d:Text="{Binding .}" Font="16" TextColor="Black"></Label>
+                                <Label Text="{Binding Token.Issuer}" d:Text="Issuer" TextColor="LightBlue"></Label>
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                                    <Label Text="{Binding Code}" d:Text="123 456" Font="22" TextColor="Gray"></Label>
+                                    <ProgressBar Progress="{Binding TokenProgress}" ProgressColor="Blue" HorizontalOptions="FillAndExpand" />
+                                </StackLayout>
+                            </StackLayout>
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

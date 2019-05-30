@@ -9,7 +9,7 @@ namespace xfOTP.Services
     {
         Task<bool> SaveTokenAsync(Token token);
         Task<bool> DeleteTokenAsync(string id);
-        Task<bool> DeleteAllTokens();
+        Task<bool> DeleteAllTokensAsync();
         Task<Token> GetTokenAsync(string id);
         Task<IEnumerable<Token>> GetTokensAsync(bool forceRefresh = false);
     }

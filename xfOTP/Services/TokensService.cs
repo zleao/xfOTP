@@ -13,7 +13,7 @@ namespace xfOTP.Services
 
         protected ITokenStore TokenStore => DependencyService.Get<ITokenStore>();
 
-        public async Task<Guid> CreateNewTokenAsync(string otpAuthString)
+        public async Task<Token> CreateNewTokenAsync(string otpAuthString)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace xfOTP.Services
                 //Add token to a secure data store
                 await TokenStore.SaveTokenAsync(token);
 
-                return token.Id;
+                return token;
                 
             }
             catch (Exception e)

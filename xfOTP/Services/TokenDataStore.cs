@@ -59,7 +59,7 @@ namespace xfOTP.Services
             }
         }
 
-        public async Task<bool> DeleteAllTokens()
+        public async Task<bool> DeleteAllTokensAsync()
         {
             try
             {

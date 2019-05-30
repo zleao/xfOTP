@@ -10,6 +10,7 @@ namespace xfOTP.Models
         public string Account { get; set; }
         public string Secret { get; set; }
         public int Digits { get; set; } = 6;
+        public int DurationSeconds { get; set; } = 30;
         public OtpHashMode HashMode { get; set; } = OtpHashMode.Sha1;
     }
 }

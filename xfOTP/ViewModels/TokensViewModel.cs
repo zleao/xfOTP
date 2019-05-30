@@ -1,4 +1,5 @@
 ﻿using OtpNet;
+using Plugin.Toasts;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using xfOTP.Models;
 using xfOTP.Services;
 
@@ -30,6 +32,8 @@ namespace xfOTP.ViewModels
 
         public Command RefreshTokensCommand { get; set; }
         public Command AddTokenCommand { get; set; }
+        public Command TokenSelectedCommand { get; set; }
+        public Command EditCommand { get; set; }
 
         #endregion
 
@@ -41,6 +45,8 @@ namespace xfOTP.ViewModels
             Tokens = new ObservableCollection<TokenViewModel>();
             RefreshTokensCommand = new Command(async () => await ExecuteRefreshTokensCommand());
             AddTokenCommand = new Command(async () => await ExecuteAddTokenCommand());
+            TokenSelectedCommand = new Command<int>(async (i) => await ExecuteTokenSelectedCommand(i));
+            EditCommand = new Command(async () => await ExecuteEditCommand());
         }
 
         #endregion
@@ -56,11 +62,11 @@ namespace xfOTP.ViewModels
 
             try
             {
-                Tokens.Clear();
+                ResetTokens();
                 var tokens = await TokenStore.GetTokensAsync(true);
                 foreach (var token in tokens)
                 {
-                    Tokens.Add(new TokenViewModel(token));
+                    UpdateTokensList(token);
                 }
             }
             catch (Exception ex)
@@ -85,7 +91,7 @@ namespace xfOTP.ViewModels
                 var qrCode = await ScannerService.ScanAsync();
                 if (qrCode.Length > 0)
                 {
-                    await UpdateTokensListAsync(await TokensService.CreateNewTokenAsync(qrCode));
+                    UpdateTokensList(await TokensService.CreateNewTokenAsync(qrCode));
                 }
             }
             catch (Exception ex)
@@ -100,14 +106,59 @@ namespace xfOTP.ViewModels
             return;
         }
 
-        private async Task UpdateTokensListAsync(Guid tokenId)
+        private async Task ExecuteTokenSelectedCommand(int tokenIndex)
         {
-            if (Tokens.Any(t => t.Token.Id == tokenId))
+            var notificator = DependencyService.Get<IToastNotificator>();
+            var options = new NotificationOptions()
+            {
+                Title = "Token",
+                Description = "Code Copied"
+            };
+
+            await notificator.Notify(options);
+        }
+
+        private async Task ExecuteEditCommand()
+        {
+            if (IsBusy)
+                return;
+
+            IsBusy = true;
+
+            try
+            {
+                ResetTokens();
+                await TokenStore.DeleteAllTokensAsync();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
+            return;
+        }
+
+        private void UpdateTokensList(Token token)
+        {
+            if (Tokens.Any(t => t.Token.Id == token.Id))
             {
                 return;
             }
 
-            Tokens.Add(new TokenViewModel(await TokenStore.GetTokenAsync(tokenId.ToString())));
+            var vm = new TokenViewModel(token);
+            Tokens.Add(vm);
+            vm.StartTokenMonitoring();
+
+        }
+
+        private void ResetTokens()
+        {
+            Tokens.ForEach(t => t.StopTokenMonitoring());
+            Tokens.Clear();
         }
 
         #endregion
