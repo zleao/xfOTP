@@ -16,6 +16,8 @@ namespace xfOTP.ViewModels
     {
         #region Properties
 
+        public ITokenStore TokenStore => DependencyService.Get<ITokenStore>();
+
         public ObservableCollection<TokenViewModel> Tokens { get; set; }
 
         public IQrScanningService ScannerService => DependencyService.Get<IQrScanningService>();
@@ -26,7 +28,7 @@ namespace xfOTP.ViewModels
 
         #region Commands
 
-        public Command LoadTokensCommand { get; set; }
+        public Command RefreshTokensCommand { get; set; }
         public Command AddTokenCommand { get; set; }
 
         #endregion
@@ -37,7 +39,7 @@ namespace xfOTP.ViewModels
         {
             Title = "Tokens";
             Tokens = new ObservableCollection<TokenViewModel>();
-            LoadTokensCommand = new Command(async () => await ExecuteLoadItemsCommand());
+            RefreshTokensCommand = new Command(async () => await ExecuteRefreshTokensCommand());
             AddTokenCommand = new Command(async () => await ExecuteAddTokenCommand());
         }
 
@@ -45,21 +47,21 @@ namespace xfOTP.ViewModels
 
         #region Methods
 
-        private Task ExecuteLoadItemsCommand()
+        private async Task ExecuteRefreshTokensCommand()
         {
             if (IsBusy)
-                return Task.CompletedTask;
+                return;
 
             IsBusy = true;
 
             try
             {
-                //Tokens.Clear();
-                //var items = await DataStore.GetItemsAsync(true);
-                //foreach (var item in items)
-                //{
-                //    Tokens.Add(item);
-                //}
+                Tokens.Clear();
+                var tokens = await TokenStore.GetTokensAsync(true);
+                foreach (var token in tokens)
+                {
+                    Tokens.Add(new TokenViewModel(token));
+                }
             }
             catch (Exception ex)
             {
@@ -69,8 +71,6 @@ namespace xfOTP.ViewModels
             {
                 IsBusy = false;
             }
-
-            return Task.CompletedTask;
         }
 
         private async Task ExecuteAddTokenCommand()
@@ -85,7 +85,7 @@ namespace xfOTP.ViewModels
                 var qrCode = await ScannerService.ScanAsync();
                 if (qrCode.Length > 0)
                 {
-                    UpdateTokensList(await TokensService.CreateNewTokenAsync(qrCode));
+                    await UpdateTokensListAsync(await TokensService.CreateNewTokenAsync(qrCode));
                 }
             }
             catch (Exception ex)
@@ -100,14 +100,14 @@ namespace xfOTP.ViewModels
             return;
         }
 
-        private void UpdateTokensList(Guid tokenId)
+        private async Task UpdateTokensListAsync(Guid tokenId)
         {
             if (Tokens.Any(t => t.Token.Id == tokenId))
             {
                 return;
             }
 
-            Tokens.Add(new TokenViewModel(new Token() { Id = tokenId }));
+            Tokens.Add(new TokenViewModel(await TokenStore.GetTokenAsync(tokenId.ToString())));
         }
 
         #endregion

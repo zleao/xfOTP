@@ -34,7 +34,7 @@ namespace xfOTP.Views
             base.OnAppearing();
 
             if (viewModel.Tokens.Count == 0)
-                viewModel.LoadTokensCommand.Execute(null);
+                viewModel.RefreshTokensCommand.Execute(null);
         }
     }
 }

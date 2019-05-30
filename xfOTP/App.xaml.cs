@@ -1,8 +1,4 @@
-﻿using System;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using xfOTP.Services;
-using xfOTP.Views;
+﻿using Xamarin.Forms;
 
 namespace xfOTP
 {
@@ -13,7 +9,6 @@ namespace xfOTP
         {
             InitializeComponent();
 
-            //DependencyService.Register<MockDataStore>();
             MainPage = new AppShell();
         }
 

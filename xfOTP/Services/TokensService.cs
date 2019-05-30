@@ -10,19 +10,23 @@ namespace xfOTP.Services
 {
     public class TokensService : ITokensService
     {
-        public Task<Guid> CreateNewTokenAsync(string otpAuthString)
+
+        protected ITokenStore TokenStore => DependencyService.Get<ITokenStore>();
+
+        public async Task<Guid> CreateNewTokenAsync(string otpAuthString)
         {
             try
             {
-                //Create the correpsondent URI to facilitate the parsing
+                //Create the correspondent URI to facilitate the parsing
                 var otpAuthUri = new Uri(otpAuthString);
 
                 //validate the otp uri
                 var token = ValidateAndExtractTokenValues(otpAuthUri);
 
-                //TODO: Add token to a secure data store
+                //Add token to a secure data store
+                await TokenStore.SaveTokenAsync(token);
 
-                return Task.FromResult(token.Id);
+                return token.Id;
                 
             }
             catch (Exception e)

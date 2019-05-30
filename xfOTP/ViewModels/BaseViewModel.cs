@@ -12,7 +12,6 @@ namespace xfOTP.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        //public IDataStore<Token> DataStore => DependencyService.Get<IDataStore<Token>>() ?? new MockDataStore();
 
         bool isBusy = false;
         public bool IsBusy
